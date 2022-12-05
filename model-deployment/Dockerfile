@@ -1,4 +1,4 @@
-FROM python:3.9
+FROM python:3.8.5
 RUN apt-get update && apt-get install ffmpeg libsm6 libxext6 libgl1 -y
 RUN mkdir -p /data/image
 COPY requirements.txt /
