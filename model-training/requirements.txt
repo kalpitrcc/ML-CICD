@@ -3,3 +3,4 @@ mlflow==1.22.0
 pandas
 numpy
 protobuf==3.19.3
+boto3
