@@ -14,16 +14,16 @@ spec:
     spec:
       containers:
       - name: flask
-        image: @@@PREDICTION_SERVER@@@
+        image: "@@@PREDICTION_SERVER@@@"
         env:
         - name: S3_ENDPOINT_URL
-          value: "http://mip-bdcs-vm64.mip.storage.hpecorp.net:10017"
+          value: "http://10.1.100.147:10019"
         - name: AWS_ACCESS_KEY_ID
           value: "admin"
         - name: AWS_SECRET_ACCESS_KEY
           value: "admin123"
         - name: MODELPATH
-          value: @@@MODELPATH@@@
+          value: "@@@MODELPATH@@@"
         resources:
           requests:
             cpu: 100m
