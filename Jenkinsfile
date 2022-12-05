@@ -39,7 +39,7 @@ pipeline {
     stage('Clone') {
       steps {
         container('git') {
-          git branch: 'master', changelog: false, poll: false, url: 'https://github.com/kalpitrcc/cicd.git'
+          git branch: 'main', changelog: false, poll: false, url: 'https://github.com/kalpitrcc/cicd.git'
         }
       }
     }
@@ -180,7 +180,9 @@ pipeline {
      steps{
        sh 'sed -i "s#@@@PREDICTION_SERVER@@@#modeldeployment:${BUILD_NUMBER}#g" model-deployment/prediction-server.yaml '
        sh 'sed -i "s#@@@MODELPATH@@@#${modelpath}#g" model-deployment/prediction-server.yaml '
+       sh 'cat model-deployment/prediction-server.yaml'
        sh 'kubectl get pods'
+	
      }
    }
    
