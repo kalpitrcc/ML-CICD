@@ -16,13 +16,8 @@ train_data_path = os.path.join(PROCESSED_DATA_DIR, train_data_file)
 test_data_file = 'test.csv'
 test_data_path = os.path.join(PROCESSED_DATA_DIR, test_data_file)
 
-os.environ["MLFLOW_S3_ENDPOINT_URL"] = "http://mip-bdcs-vm64.mip.storage.hpecorp.net:10017"
-os.environ["AWS_ACCESS_KEY_ID"] = "admin"
-os.environ["AWS_SECRET_ACCESS_KEY"] = "admin123"
-os.environ["MLFLOW_TRACKING_URI"] = "http://mip-bdcs-vm64.mip.storage.hpecorp.net:10028"
-
 #EXPERIMENT_NAME = os.environ["EXPERIMENT_NAME"]
-EXPERIMENT_NAME = "abc"
+EXPERIMENT_NAME = "cicd"
 mlflow.set_experiment(EXPERIMENT_NAME)
 EXPERIMENT_ID = mlflow.get_experiment_by_name(EXPERIMENT_NAME).experiment_id
 
