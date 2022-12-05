@@ -30,6 +30,7 @@ pipeline {
   }
 
 				environment {
+					modelpath = ""
 
 				DOCKER_HUB_CREDENTIALS = credentials('DEVSDS_DOCKERHUB')
 
@@ -156,8 +157,8 @@ pipeline {
       steps {
         container('modeltraining') { 
 		script{
-			//modelpath = sh(returnStdout: true, script: "python /app/training.py | grep -Eo   's3://[a-zA-Z0-9./?=_-]*' ")
-			modelpath = sh(returnStdout: true, script: "python /app/training.py")
+			modelpath = sh(returnStdout: true, script: "python /app/training.py | grep -Eo   's3://[a-zA-Z0-9./?=_-]*' ")
+			//modelpath = sh(returnStdout: true, script: "python /app/training.py")
 			echo "${modelpath}"
 		}             
         }
