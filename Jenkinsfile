@@ -189,7 +189,7 @@ pipeline {
 	echo "${modelpath}"
 	
        sh '''sed -i "s#@@@PREDICTION_SERVER@@@#modeldeployment:${BUILD_NUMBER}#g" model-deployment/prediction-server.yaml '''
-	     sh '''sed -i "s#@@@MODELPATH@@@#${modelpath}#g" model-deployment/prediction-server.yaml '''
+	     sh '''sed -i "s#@@@MODELPATH@@@#${env.modelpath}#g" model-deployment/prediction-server.yaml '''
        sh 'cat model-deployment/prediction-server.yaml'
        sh 'kubectl get pods'
 	
