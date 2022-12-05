@@ -74,7 +74,7 @@ pipeline {
         kind: Pod
         spec:
           containers:
-          - name: modeltraining
+          - name: preprocessing
             image: "devsds/modeltraining:${BUILD_NUMBER}"
             env: 
             - name: RAW_DATA_DIR 
@@ -104,7 +104,7 @@ pipeline {
       }
       
       steps {
-        container('modeltraining') { 
+        container('preprocessing') { 
 	        sh 'python /app/preprocessing.py'
           
         }
@@ -153,7 +153,7 @@ pipeline {
       }
       
       steps {
-        container('Model Training') { 
+        container('modeltraining') { 
 		script{
 			modelpath = sh(returnStdout: true, script: "python /app/training.py | grep -Eo   's3://[a-zA-Z0-9./?=_-]*' ")
 		}             
