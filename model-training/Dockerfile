@@ -1,4 +1,4 @@
-FROM python:3.9
+FROM python:3.8.5
 RUN apt-get update
 RUN mkdir -p /app
 COPY requirements.txt /app
