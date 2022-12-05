@@ -154,9 +154,9 @@ pipeline {
       
       steps {
         container('Model Training') { 
-          //modelpath = sh(returnStdout: true, script: "python /app/training.py | grep -Eo   's3://[a-zA-Z0-9./?=_-]*' ")
-	    modelpath = sh 'returnStdout: true, script: "python /app/training.py | grep -Eo   \'s3://[a-zA-Z0-9./?=_-]*\' "'
-	                 
+		script{
+			modelpath = sh(returnStdout: true, script: "python /app/training.py | grep -Eo   's3://[a-zA-Z0-9./?=_-]*' ")
+		}             
         }
       }
     }
