@@ -183,15 +183,20 @@ pipeline {
    stage('Deploy Model'){
      steps{
 	     
+	   //  script{
+	   //  env.modelpath = modelpath
+	   //  }
 	     script{
-	     env.modelpath = modelpath
+	     String filenew = readFile('model-deployment/prediction-server.yaml').replaceAll('@@@PREDICTION_SERVER@@@',env.BUILD_NUMBER ).replaceAll('@@@MODELPATH@@',modelpath)
+		     
+	     writeFile file:'model-deployment/prediction-server.yaml', text: filenew
 	     }
-	echo "${modelpath}"
+// 	echo "${modelpath}"
 	
-       sh '''sed -i "s#@@@PREDICTION_SERVER@@@#modeldeployment:${BUILD_NUMBER}#g" model-deployment/prediction-server.yaml '''
-	     sh '''sed -i "s#@@@MODELPATH@@@#${env.modelpath}#g" model-deployment/prediction-server.yaml '''
-       sh 'cat model-deployment/prediction-server.yaml'
-       sh 'kubectl get pods'
+//        sh '''sed -i "s#@@@PREDICTION_SERVER@@@#modeldeployment:${BUILD_NUMBER}#g" model-deployment/prediction-server.yaml '''
+// 	     sh '''sed -i "s#@@@MODELPATH@@@#${env.modelpath}#g" model-deployment/prediction-server.yaml '''
+//        sh 'cat model-deployment/prediction-server.yaml'
+//        sh 'kubectl get pods'
 	
      }
    }
