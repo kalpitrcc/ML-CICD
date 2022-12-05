@@ -1,5 +1,4 @@
 def modelpath = ""
-
 pipeline {
   agent {
     kubernetes {
@@ -28,15 +27,9 @@ pipeline {
         '''
     }
   }
-
-				environment {
-					modelpath = ""
-
-				DOCKER_HUB_CREDENTIALS = credentials('DEVSDS_DOCKERHUB')
-
-				}
-	
-
+ environment {	
+	 DOCKER_HUB_CREDENTIALS = credentials('DEVSDS_DOCKERHUB')
+}	
  stages {
     stage('Clone') {
       steps {
@@ -45,13 +38,12 @@ pipeline {
         }
       }
     }
-   stage('Docker Login') {
+    stage('Docker Login') {
       steps {
         container('docker') {
           sh 'echo $DOCKER_HUB_CREDENTIALS_PSW | docker login -u $DOCKER_HUB_CREDENTIALS_USR --password-stdin'
-      
+        }
       }
-    }
     }
     stage('Build Training Image') {
       steps {
@@ -60,8 +52,7 @@ pipeline {
         }
       }
     }
-    
-     stage('Push Training Image') {
+    stage('Push Training Image') {
       steps {
         container('docker') {
           sh 'docker push devsds/modeltraining:$BUILD_NUMBER'
@@ -100,19 +91,15 @@ pipeline {
             - name: "dataset"
               persistentVolumeClaim:
                 claimName: dataset
-
         """.stripIndent()
         }
       }
-      
       steps {
         container('preprocessing') { 
-	        sh 'python /app/preprocessing.py'
-          
+	  sh 'python /app/preprocessing.py'
         }
       }
-    }
-   
+    } 
    stage('Training') {
       agent {
         kubernetes {
@@ -149,18 +136,14 @@ pipeline {
             - name: "dataset"
               persistentVolumeClaim:
                 claimName: dataset
-
         """.stripIndent()
         }
       }
-      
       steps {
         container('modeltraining') { 
-		script{
-			modelpath = sh(returnStdout: true, script: "python /app/training.py | grep -Eo   's3://[a-zA-Z0-9./?=_-]*' ")
-			//modelpath = sh(returnStdout: true, script: "python /app/training.py")
-			echo "${modelpath}"
-		}             
+          script{
+            modelpath = sh(returnStdout: true, script: "python /app/training.py | grep -Eo   's3://[a-zA-Z0-9./?=_-]*' ")
+	 }             
         }
       }
     }
@@ -171,36 +154,22 @@ pipeline {
         }
       }
     }
-    
-     stage('Push Model Deployment Image') {
+    stage('Push Model Deployment Image') {
       steps {
         container('docker') {
           sh 'docker push devsds/modeldeployment:$BUILD_NUMBER'
       }
     }
    }
-   
    stage('Deploy Model'){
      steps{
-	     
-	   //  script{
-	   //  env.modelpath = modelpath
-	   //  }
-	     script{
-	     String filenew = readFile('model-deployment/prediction-server.yaml').replaceAll('@@@PREDICTION_SERVER@@@',env.BUILD_NUMBER ).replaceAll('@@@MODELPATH@@',modelpath)
-		     
-	     writeFile file:'model-deployment/prediction-server.yaml', text: filenew
-	     }
-// 	echo "${modelpath}"
-	
-//        sh '''sed -i "s#@@@PREDICTION_SERVER@@@#modeldeployment:${BUILD_NUMBER}#g" model-deployment/prediction-server.yaml '''
-// 	     sh '''sed -i "s#@@@MODELPATH@@@#${env.modelpath}#g" model-deployment/prediction-server.yaml '''
-        sh 'cat model-deployment/prediction-server.yaml'
-//        sh 'kubectl get pods'
-	
+        script{
+	  String filenew = readFile('model-deployment/prediction-server.yaml').replaceAll('@@@PREDICTION_SERVER@@@',env.BUILD_NUMBER ).replaceAll('@@@MODELPATH@@@',modelpath)     
+	  writeFile file:'model-deployment/prediction-server.yaml', text: filenew
+	}
+        sh 'cat model-deployment/prediction-server.yaml'	
      }
    }
-   
   }
     post {
       always {
