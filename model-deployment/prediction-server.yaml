@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prediction-server
+spec:
+  selector:
+    matchLabels:
+      app: prediction-server
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: prediction-server
+    spec:
+      containers:
+      - name: flask
+        image: @@@PREDICTION_SERVER@@@
+        env:
+        - name: S3_ENDPOINT_URL
+          value: "http://mip-bdcs-vm64.mip.storage.hpecorp.net:10017"
+        - name: AWS_ACCESS_KEY_ID
+          value: "admin"
+        - name: AWS_SECRET_ACCESS_KEY
+          value: "admin123"
+        - name: MODELPATH
+          value: @@@MODELPATH@@@
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        ports:
+        - containerPort: 8000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+  labels:
+    hpecp.hpe.com/hpecp-internal-gateway: "true"
+    app: prediction-server
+spec:
+  # comment or delete the following line if you want to use a LoadBalancer
+  type: NodePort
+  # if your cluster supports it, uncomment the following to automatically create
+  # an external load-balanced IP for the frontend service.
+  # type: LoadBalancer
+  ports:
+  - port: 8000
+  selector:
+    app: prediction-server
