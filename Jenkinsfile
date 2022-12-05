@@ -190,8 +190,8 @@ pipeline {
     post {
       always {
         container('docker') {
-          sh 'docker rmi devsds/modeltraining:${BUILD_NUMBER}'
-          sh 'docker rmi devsds/modeldeployment:${BUILD_NUMBER}'
+          sh 'docker rmi devsds/modeltraining:${BUILD_NUMBER} -f'
+          sh 'docker rmi devsds/modeldeployment:${BUILD_NUMBER} -f'
         }
       }
     }
