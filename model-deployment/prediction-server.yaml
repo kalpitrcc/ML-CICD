@@ -34,7 +34,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: frontend
+  name: prediction-server-svc
   labels:
     hpecp.hpe.com/hpecp-internal-gateway: "true"
     app: prediction-server
