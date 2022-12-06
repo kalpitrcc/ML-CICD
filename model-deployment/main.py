@@ -7,6 +7,7 @@ model = ""
 
 @app.before_first_request
 def load_model():
+    global model
     app.logger.info("Download and loading the Model in Memory.")
     s3 = boto3.client('s3', 
         endpoint_url=os.environ["S3_ENDPOINT_URL"],
