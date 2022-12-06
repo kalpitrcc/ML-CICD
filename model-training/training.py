@@ -17,7 +17,7 @@ test_data_file = 'test.csv'
 test_data_path = os.path.join(PROCESSED_DATA_DIR, test_data_file)
 
 #EXPERIMENT_NAME = os.environ["EXPERIMENT_NAME"]
-EXPERIMENT_NAME = "cicd"
+EXPERIMENT_NAME = "ML-CICD"
 mlflow.set_experiment(EXPERIMENT_NAME)
 EXPERIMENT_ID = mlflow.get_experiment_by_name(EXPERIMENT_NAME).experiment_id
 
@@ -61,4 +61,4 @@ with mlflow.start_run(run_name='Logistic Regression', experiment_id=EXPERIMENT_I
     mlflow.log_metric("accuracy", accuracy)
     
     mlflow.sklearn.log_model(logreg, "model")
-    print("Model: {}/model".format(run.info.artifact_uri))
+    print("Model: {}/model/model.pkl".format(run.info.artifact_uri))
