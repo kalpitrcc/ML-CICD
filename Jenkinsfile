@@ -172,28 +172,17 @@ pipeline {
 	  String filenew = readFile('model-deployment/prediction-server.yaml').replaceAll('@@@PREDICTION_SERVER@@@',"devsds/modeldeployment:" + env.BUILD_NUMBER ).replaceAll('@@@MODELPATH@@@',modelpath)     
 	  writeFile file:'model-deployment/prediction-server.yaml', text: filenew
 	}
-        sh 'cat model-deployment/prediction-server.yaml'       
+        container('shell') {
+           withKubeConfig([credentialsId: 'KUBECONFIG', serverUrl: 'https://hpecp-10-1-100-147.rcc.local:10007']) {
+             sh 'kubectl delete -f model-deployment/prediction-server.yaml'
+	     sh 'sleep 10s'
+             sh 'kubectl create -f model-deployment/prediction-server.yaml'
+	     sh 'sleep 10s'
+             sh 'kubectl get  svc prediction-server-svc -o jsonpath="{.metadata.annotations.hpecp-internal-gateway/8000}"'
+           }
+        }
      }
    }
-    stage('Apply Kubernetes files') {
-      steps{
-              container('shell') {
-    		withKubeConfig([credentialsId: 'KUBECONFIG', serverUrl: 'https://hpecp-10-1-100-147.rcc.local:10007']) {
-			sh '''
-#!/bin/bash
-value=$(kubectl get deployments -n jnks | grep prediction-server | awk '{print $1}')
-if [[ $value = "prediction-server"  ]]; then
-	kubectl set image deployment/prediction-server flask=devsds/modeldeployment:$BUILD_NUMBER -n jnks
-else
-	kubectl apply -f  /home/jenkins/agent/workspace/cicd/model-deployment/prediction-server.yaml
-fi
-			'''
-			sh 'sleep 15s'
-			sh 'kubectl get pods -n jnks'
-    		}
- 	      }
-       }  
-  }	 
   }
     post {
       always {
