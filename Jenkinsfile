@@ -172,7 +172,10 @@ pipeline {
 	  String filenew = readFile('model-deployment/prediction-server.yaml').replaceAll('@@@PREDICTION_SERVER@@@',env.BUILD_NUMBER ).replaceAll('@@@MODELPATH@@@',modelpath)     
 	  writeFile file:'model-deployment/prediction-server.yaml', text: filenew
 	}
-        sh 'cat model-deployment/prediction-server.yaml'	
+        sh 'cat model-deployment/prediction-server.yaml'
+        sh 'pwd'
+        sh 'ls'
+        sh 'find / -name prediction-server.yaml'
      }
    }
     stage('Apply Kubernetes files') {
@@ -184,11 +187,11 @@ pipeline {
 			sh '''
 			
 #!/bin/bash
-value=$(kubectl get deployments -n jnks | grep jupyter-deployment | awk '{print $1}')
-if [[ $value = "jupyter-deployment"  ]]; then
-	kubectl set image deployment/jupyter-deployment jupyter-app=devsds/jupyterhub:v1.0_$BUILD_NUMBER -n jnks
+value=$(kubectl get deployments -n jnks | grep prediction-server | awk '{print $1}')
+if [[ $value = "prediction-server"  ]]; then
+	kubectl set image deployment/prediction-server flask=devsds/modeldeployment:$BUILD_NUMBER -n jnks
 else
-	kubectl apply -f  /home/jenkins/agent/workspace/jupyterhub_main/jupyterhub-deploy.yaml
+	kubectl apply -f  /home/jenkins/agent/workspace/cicd_main/model-deployment/prediction-server.yaml
 fi
 			'''
       			//sh 'kubectl apply -f /home/jenkins/agent/workspace/jupyterhub_main/jupyterhub-deploy.yaml'
