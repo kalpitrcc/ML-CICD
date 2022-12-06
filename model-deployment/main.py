@@ -5,16 +5,6 @@ app = Flask(__name__)
 # Load the model
 model = ""
 
-
-MODELPATH = "s3://mlflow/3/8c3ed6ec528c45caa06d2e6fe06717ec/artifacts/model/model.pkl"
-
-os.environ["MLFLOW_S3_ENDPOINT_URL"] = "http://mip-bdcs-vm64.mip.storage.hpecorp.net:10017"
-os.environ["AWS_ACCESS_KEY_ID"] = "admin"
-os.environ["AWS_SECRET_ACCESS_KEY"] = "admin123"
-os.environ["MLFLOW_TRACKING_URI"] = "http://mip-bdcs-vm64.mip.storage.hpecorp.net:10028"
-os.environ["MODELPATH"] = MODELPATH
-
-
 @app.before_first_request
 def load_model():
     app.logger.info("Download and loading the Model in Memory.")
@@ -36,11 +26,12 @@ def load_model():
 def predict():
     # Get the data from the POST request.
     data = request.get_json(force=True)
+    app.logger.info(data)
     # Make prediction using model loaded from disk as per the data.
-    prediction = model.predict([[np.array(data['exp'])]])
+    prediction = model.predict(data["data"]).tolist()
     # Take the first value of prediction
-    output = prediction[0]
-    return jsonify(output)
+    app.logger.info(prediction)
+    return jsonify({"prediction": prediction})
 
 
 if __name__ == '__main__':
