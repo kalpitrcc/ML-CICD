@@ -175,7 +175,7 @@ pipeline {
         sh 'cat model-deployment/prediction-server.yaml'
         sh 'pwd'
         sh 'ls'
-        sh 'find / -name prediction-server.yaml'
+       
      }
    }
     stage('Apply Kubernetes files') {
@@ -191,7 +191,7 @@ value=$(kubectl get deployments -n jnks | grep prediction-server | awk '{print $
 if [[ $value = "prediction-server"  ]]; then
 	kubectl set image deployment/prediction-server flask=devsds/modeldeployment:$BUILD_NUMBER -n jnks
 else
-	kubectl apply -f  /home/jenkins/agent/workspace/cicd_main/model-deployment/prediction-server.yaml
+	kubectl apply -f  /home/jenkins/agent/workspace/cicd/model-deployment/prediction-server.yaml
 fi
 			'''
       			//sh 'kubectl apply -f /home/jenkins/agent/workspace/jupyterhub_main/jupyterhub-deploy.yaml'
