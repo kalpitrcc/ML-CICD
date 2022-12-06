@@ -20,7 +20,7 @@ def load_model():
 
     BUCKET, MODEL = os.environ["MODELPATH"].split("/")[2], "/".join(os.environ["MODELPATH"].split("/")[3:])
 
-    s3.download_file(BUCKET,MODEL, "model.pkl")
+    s3.download_file(BUCKET.strip(),MODEL.strip(), "model.pkl")
     model = pickle.load(open('model.pkl','rb'))
 
 @app.route('/api/prediction', methods=['POST'])
