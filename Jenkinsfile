@@ -39,7 +39,7 @@ pipeline {
     stage('Clone') {
       steps {
         container('git') {
-          git branch: 'main', changelog: false, poll: false, url: 'https://github.com/kalpitrcc/cicd.git'
+          git branch: 'main', changelog: false, poll: false, url: 'https://github.com/kalpitrcc/ML-CICD.git'
         }
       }
     }
