@@ -172,24 +172,14 @@ pipeline {
 	  String filenew = readFile('model-deployment/prediction-server.yaml').replaceAll('@@@PREDICTION_SERVER@@@',"devsds/modeldeployment:" + env.BUILD_NUMBER ).replaceAll('@@@MODELPATH@@@',modelpath)     
 	  writeFile file:'model-deployment/prediction-server.yaml', text: filenew
 	}
-//         script{
-// 	         String filenew = readFile('jupyterhub-deploy.yaml').replaceAll('@@@IMAGE_TAG@@@',"devsds/jupyterhub:v1.0_" + env.BUILD_NUMBER )   
-// 	         writeFile file:'jupyterhub-deploy.yaml', text: filenew
-// 	}
-        sh 'cat model-deployment/prediction-server.yaml'
-        sh 'pwd'
-        sh 'ls'
-       
+        sh 'cat model-deployment/prediction-server.yaml'       
      }
    }
     stage('Apply Kubernetes files') {
       steps{
               container('shell') {
-                //withKubeConfig([credentialsId: 'KUBECONFIG', serverUrl: 'https://hpecp-10-1-100-147.rcc.local:10007']) {
-                //sh 'kubectl get pods'
     		withKubeConfig([credentialsId: 'KUBECONFIG', serverUrl: 'https://hpecp-10-1-100-147.rcc.local:10007']) {
 			sh '''
-			
 #!/bin/bash
 value=$(kubectl get deployments -n jnks | grep prediction-server | awk '{print $1}')
 if [[ $value = "prediction-server"  ]]; then
@@ -198,17 +188,13 @@ else
 	kubectl apply -f  /home/jenkins/agent/workspace/cicd/model-deployment/prediction-server.yaml
 fi
 			'''
-      			//sh 'kubectl apply -f /home/jenkins/agent/workspace/jupyterhub_main/jupyterhub-deploy.yaml'
 			sh 'sleep 15s'
 			sh 'kubectl get pods -n jnks'
-			
     		}
  	      }
        }  
   }	 
   }
-  	
-	
     post {
       always {
         container('docker') {
